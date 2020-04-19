@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prospect_Merge_Rule</fullName>
+    <active>true</active>
+    <description>Prospect Merge Rule requires that MasterContact is set before allowing MergeApproved to be set to true</description>
+    <errorConditionFormula>NOT(ISBLANK( MasterContact__c ))
+&amp;&amp;  RecordType.Name == &#39;Prospect&#39;
+&amp;&amp;   MergeApproved__c</errorConditionFormula>
+    <errorMessage>Prospect Records must be linked to Master Contact (Client) before Merge Approved can be set to true.</errorMessage>
+</ValidationRule>

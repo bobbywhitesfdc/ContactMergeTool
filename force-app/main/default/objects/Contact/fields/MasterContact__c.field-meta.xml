@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MasterContact__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Master Contact record to which this Duplicate Contact should be merged.</description>
+    <externalId>false</externalId>
+    <label>Master Contact</label>
+    <referenceTo>Contact</referenceTo>
+    <relationshipLabel>Duplicate Prospects</relationshipLabel>
+    <relationshipName>MasterContact</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Lookup</type>
+</CustomField>
