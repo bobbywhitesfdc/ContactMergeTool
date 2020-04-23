@@ -1,0 +1,8 @@
+"Id","AccountId","TDA_Contact_Type__c","FirstName","LastName","Email","Phone","Title","ODS_Client_ID__c"
+"1","1","Prospect","Boris","Becker","boris.becker@tennis.org","+49(17)5555-12345","2",""
+"2","1","Client","Boris","Becker","boris.becker@tennis.org","+49(17)5555-12345","","2"
+"3","2","Client","Gregory","Jones","ghj@gmail.com","(704)555-1212","","4"
+"4","2","Client","Amy","Jones","agj@gmail.com","(704)555-1213","","5"
+"5","3","Client","Robert","White","rwhite@hotmail.com","(704)555-4117","","6"
+"6","3","Prospect","Bobby","White","rwhite@hotmail.com","(704)555-4117","6",""
+"7","3","Client","Anne","White","agw@yahoo.com","(704)555-8557","","7"
