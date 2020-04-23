@@ -4,6 +4,7 @@ public class ContactMergeUtility_Test {
     @testsetup
     public static void setup() {
        // Create some contacts with duplicates for our scenarios
+       // Test data 
        List<Account> testAccounts = Test.loadData(Account.sobjectType,'TestAccounts');
        List<Contact> testContacts = Test.loadData(Contact.sobjectType,'TestContacts');
         
@@ -14,7 +15,7 @@ public class ContactMergeUtility_Test {
                                          Where TDA_Contact_Type__c = 'Prospect' 
                                          LIMIT 1000];
         
-        ContactMergeUtility merger = new ContactMergeUtility(prospects);
+        ContactMergeUtility merger = new ContactMergeUtility(prospects,'Client');
         merger.match();
         
         final Map<Contact,Set<Contact>> matchResults = merger.matchResults;
