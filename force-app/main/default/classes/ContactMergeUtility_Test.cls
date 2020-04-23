@@ -18,27 +18,24 @@ public class ContactMergeUtility_Test {
         ContactMergeUtility merger = new ContactMergeUtility(prospects,'Client');
         merger.match();
         
-        final Map<Contact,Set<Contact>> matchResults = merger.matchResults;
+        final Map<Contact,Contact> matchResults = merger.matchResults;
         
         for(Contact current : prospects) {
             System.debug('Candidate: ' + current);
-            Set<Contact> matches = matchResults.get(current);
+            final Contact match = matchResults.get(current);
             final String expectedKey = current.title;
-            System.AssertNotEquals(null,matches,'Expected match collection Set<Contact>');
-            Map<Id,Contact> matchMap = new Map<Id,Contact>(new List<Contact>(matches));
+ 
+        
+            Contact currentMatch = (match == null) ? null  : [Select Id, Name, TDA_ODS_Client_ID__c, TDA_Contact_Type__c 
+                                                              From Contact 
+                                                              Where Id = :match.Id];
 
-            final Set<String> matchKeys = new Set<String>();
-            for(Contact currentMatch : [Select Id, Name, TDA_ODS_Client_ID__c, TDA_Contact_Type__c 
-                                        From Contact 
-                                        Where Id IN :matchMap.keySet()]) {
-                System.debug('Match: ' + currentMatch );
-                matchKeys.add(currentMatch.TDA_ODS_Client_ID__c); // ODS mastered Client Id           
-            }
+            final String matchKey = currentMatch == null ? null : currentMatch.TDA_ODS_Client_ID__c;
             
             if (String.isNotBlank(expectedKey)) {
-                System.Assert(matchKeys.contains(expectedKey),'Expected match not found!' + expectedKey);
+                System.AssertEquals(expectedKey, matchKey,'Expected match not found!');
             } else {
-                System.Assert(matchKeys.isEmpty(),'No matches expected!' + String.join(new List<String>(matchKeys),','));
+                System.AssertEquals(null,matchKey,'Did not expect match!');
             }
         }
     }
