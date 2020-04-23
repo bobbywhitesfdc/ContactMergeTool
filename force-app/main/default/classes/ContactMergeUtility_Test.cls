@@ -9,9 +9,10 @@ public class ContactMergeUtility_Test {
         
     }
     public static testmethod void positiveCase() {
-        final List<Contact> prospects = [SELECT Id, Name, RecordTypeId,RecordType.Name, Email, Phone, Title 
+        final List<Contact> prospects = [SELECT Id, Name, TDA_Contact_Type__c, Email, Phone, Title, TDA_ODS_Client_ID__c 
                                          From Contact 
-                                         Where RecordType.Name='Prospect' LIMIT 1000];
+                                         Where TDA_Contact_Type__c = 'Prospect' 
+                                         LIMIT 1000];
         
         ContactMergeUtility merger = new ContactMergeUtility(prospects);
         merger.match();
@@ -23,10 +24,14 @@ public class ContactMergeUtility_Test {
             Set<Contact> matches = matchResults.get(current);
             final String expectedKey = current.title;
             System.AssertNotEquals(null,matches,'Expected match collection Set<Contact>');
+            Map<Id,Contact> matchMap = new Map<Id,Contact>(new List<Contact>(matches));
+
             final Set<String> matchKeys = new Set<String>();
-            for(Contact currentMatch : matches) {
+            for(Contact currentMatch : [Select Id, Name, TDA_ODS_Client_ID__c, TDA_Contact_Type__c 
+                                        From Contact 
+                                        Where Id IN :matchMap.keySet()]) {
                 System.debug('Match: ' + currentMatch );
-                matchKeys.add(currentMatch.title); // For this test, we've parked the externalid in the Title field            
+                matchKeys.add(currentMatch.TDA_ODS_Client_ID__c); // ODS mastered Client Id           
             }
             
             if (String.isNotBlank(expectedKey)) {

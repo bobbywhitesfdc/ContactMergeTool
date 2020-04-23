@@ -4,7 +4,7 @@
     <active>false</active>
     <description>Prospect Merge Rule requires that MasterContact is set before allowing MergeApproved to be set to true</description>
     <errorConditionFormula>NOT(ISBLANK( MasterContact__c ))
-&amp;&amp;  RecordType.Name == &#39;Prospect&#39;
+&amp;&amp;  ISPICKVAL(TDA_Contact_Type__c,&#39;Prospect&#39;)
 &amp;&amp;   MergeApproved__c</errorConditionFormula>
     <errorMessage>Prospect Records must be linked to Master Contact (Client) before Merge Approved can be set to true.</errorMessage>
 </ValidationRule>

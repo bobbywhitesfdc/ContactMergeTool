@@ -3,7 +3,7 @@
     <fullName>Prospect_Master_Prospects_Only</fullName>
     <active>false</active>
     <description>Prospect Master field cannot be set for Client records.</description>
-    <errorConditionFormula>RecordType.Name = &#39;Client&#39;
+    <errorConditionFormula>ISPICKVAL(TDA_Contact_Type__c,&#39;Prospect&#39;)
 &amp;&amp; NOT(ISNULL( MasterContact__c ))</errorConditionFormula>
     <errorMessage>Only Prospect Records can be marked as duplicates of Clients</errorMessage>
 </ValidationRule>
