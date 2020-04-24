@@ -14,12 +14,14 @@ public class ContactMergeUtility_Test {
                                          From Contact 
                                          Where TDA_Contact_Type__c = 'Prospect' 
                                          LIMIT 1000];
-        
+        Test.startTest();
+
         ContactMergeUtility merger = new ContactMergeUtility(prospects,'Client');
         merger.match();
-        
         final Map<Contact,Contact> matchResults = merger.matchResults;
-        
+
+        Test.stopTest();
+
         for(Contact current : prospects) {
             System.debug('Candidate: ' + current);
             final Contact match = matchResults.get(current);
@@ -38,6 +40,7 @@ public class ContactMergeUtility_Test {
                 System.AssertEquals(null,matchKey,'Did not expect match!');
             }
         }
+
     }
 
     private static testmethod void testSaveMatches() {
@@ -52,11 +55,14 @@ public class ContactMergeUtility_Test {
 
         final Map<Contact,Contact> matchResults = merger.matchResults;
 
- 
+        Test.startTest();
+
         for(Database.SaveResult currentResult : merger.saveMatches(merger.matchResults)) {
             final String errorMsg = currentResult.getErrors().isEmpty() ? 'Unknown failure' : currentResult.getErrors()[0].getMessage();
             System.Assert(currentResult.isSuccess(),errorMsg);
         }
+
+        Test.stopTest();
 
  
         for (Contact current : [Select Id, Name, Title, MasterContact__c
@@ -70,6 +76,57 @@ public class ContactMergeUtility_Test {
                                 ,current.MergeApproved__c,'MergeApproved flag set incorrectly');
         }
 
+    }
+
+    private static testmethod void testMergeDuplicates() {
+        final List<Contact> prospects = [SELECT Id, Name, TDA_Contact_Type__c, Email, Phone, Title, TDA_ODS_Client_ID__c 
+                                         FROM Contact 
+                                         WHERE TDA_Contact_Type__c = 'Prospect' 
+                                         LIMIT 1000];
+
+        final List<Contact> expectedMerges = [SELECT Id, TDA_Contact_Type__c, Title
+                                               FROM Contact
+                                               WHERE TDA_Contact_Type__c = 'Prospect'
+                                                 and Title != null];                                
+ 
+        ContactMergeUtility merger = new ContactMergeUtility(prospects,'Client');
+        merger.match();
+
+        final Map<Contact,Contact> matchResults = merger.matchResults;
+
+ 
+        for(Database.SaveResult currentResult : merger.saveMatches(merger.matchResults)) {
+            final String errorMsg = currentResult.getErrors().isEmpty() ? 'Unknown failure' : currentResult.getErrors()[0].getMessage();
+            System.Assert(currentResult.isSuccess(),errorMsg);
+        }
+
+        Test.startTest();
+
+        final List<Contact> duplicates = [SELECT Id, Name
+                                            , TDA_Contact_Type__c, Email, Phone, Title
+                                            , TDA_ODS_Client_ID__c, MergeApproved__c, MasterContact__c
+                                          FROM Contact 
+                                          WHERE TDA_Contact_Type__c = 'Prospect' 
+                                            and MergeApproved__c=true
+                                            and MasterContact__c != null 
+                                         LIMIT 1000];
+
+        final List<Database.MergeResult> results = merger.processMerges(duplicates,'Prospect');
+
+        Test.stopTest();
+
+        for (Database.MergeResult current : results ) {
+             final String errorMessage = current.isSuccess() || current.getErrors().isEmpty() ? 'No error' : current.getErrors()[0].getMessage();
+             System.Assert(current.isSuccess(),'Error:' + errorMessage);
+        }
+
+        final List<Contact> afterMerge = [SELECT Id, MergeApproved__c, Title, isDeleted 
+                                          FROM Contact
+                                          WHERE isDeleted=true
+                                          ALL ROWS];
+
+        System.AssertEquals(expectedMerges.size(),afterMerge.size(),'Actual merge count wrong');
+ 
     }
     
 }

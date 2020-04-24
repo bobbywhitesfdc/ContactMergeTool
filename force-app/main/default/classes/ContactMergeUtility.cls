@@ -115,5 +115,23 @@ public class ContactMergeUtility {
 
         List<Database.SaveResult> results = Database.update(contactsToUpdate,false);
         return results;
-    }  
+    }
+    
+    /**
+     * Iterate through the Approved Prospect merges and execute the physical merges
+     **/
+    public List<Database.MergeResult> processMerges(final List<Contact> toBeMerged, final String duplicateType) {
+        List<Database.MergeResult> results = new List<Database.MergeResult>(); 
+        for (Contact duplicate : toBeMerged) {
+            if (duplicate.TDA_Contact_Type__c == duplicateType
+               && duplicate.MergeApproved__c == true
+               && duplicate.MasterContact__c != null ) {
+                   // Merge the duplicate into the Master
+                   final Contact master = new Contact(Id=duplicate.MasterContact__c);
+                   Database.MergeResult currentResult = Database.Merge(master,duplicate.id);
+                   results.add(currentResult);
+               }
+        }
+        return results;
+    }
 }
