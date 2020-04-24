@@ -97,5 +97,23 @@ public class ContactMergeUtility {
                                     Where Id IN :matchIds]); 
     }
 
-    
+
+    /**
+     * Break the overall process down by saving the Matches as lookups on the Contact object
+     * This allows a business process where end users can review the proposed matches and uncheck
+     * the MergeApproved__c field if they don't like the proposed match.
+     */
+    public List<Database.SaveResult> saveMatches(final Map<Contact,Contact> matchResults) {
+        final List<Contact> contactsToUpdate = new List<Contact>();
+        for (Contact duplicate : matchResults.keySet()) {
+            final Contact master = matchResults.get(duplicate);
+            final Id masterId = (master==null? null : master.Id);
+            contactsToUpdate.add(new Contact(Id=duplicate.Id
+                                ,MasterContact__c= masterId
+                                ,MergeApproved__c= (masterId != null)));
+        }
+
+        List<Database.SaveResult> results = Database.update(contactsToUpdate,false);
+        return results;
+    }  
 }

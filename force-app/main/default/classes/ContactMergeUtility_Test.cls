@@ -9,7 +9,7 @@ public class ContactMergeUtility_Test {
        List<Contact> testContacts = Test.loadData(Contact.sobjectType,'TestContacts');
         
     }
-    public static testmethod void positiveCase() {
+    public static testmethod void testMatching() {
         final List<Contact> prospects = [SELECT Id, Name, TDA_Contact_Type__c, Email, Phone, Title, TDA_ODS_Client_ID__c 
                                          From Contact 
                                          Where TDA_Contact_Type__c = 'Prospect' 
@@ -38,6 +38,38 @@ public class ContactMergeUtility_Test {
                 System.AssertEquals(null,matchKey,'Did not expect match!');
             }
         }
+    }
+
+    private static testmethod void testSaveMatches() {
+        final List<Contact> prospects = [SELECT Id, Name, TDA_Contact_Type__c, Email, Phone, Title, TDA_ODS_Client_ID__c 
+                                         FROM Contact 
+                                         WHERE TDA_Contact_Type__c = 'Prospect' 
+                                         LIMIT 1000];
+        final Set<Id> prospectIds = new Map<Id,Contact>(prospects).keySet();
+
+        ContactMergeUtility merger = new ContactMergeUtility(prospects,'Client');
+        merger.match();
+
+        final Map<Contact,Contact> matchResults = merger.matchResults;
+
+ 
+        for(Database.SaveResult currentResult : merger.saveMatches(merger.matchResults)) {
+            final String errorMsg = currentResult.getErrors().isEmpty() ? 'Unknown failure' : currentResult.getErrors()[0].getMessage();
+            System.Assert(currentResult.isSuccess(),errorMsg);
+        }
+
+ 
+        for (Contact current : [Select Id, Name, Title, MasterContact__c
+                                        , MasterContact__r.TDA_ODS_Client_Id__c, MergeApproved__c
+                                FROM Contact 
+                                WHERE Id IN :prospectIds]) {
+            final String expectedMatchId = String.IsBlank(current.Title) ? null : current.Title;
+            final String actualMatchId = current.MasterContact__c == null ? null : current.MasterContact__r.TDA_ODS_Client_Id__c;
+            System.AssertEquals(expectedMatchId,actualMatchId,'Unexpected match');
+            System.AssertEquals(!String.isBlank(expectedMatchId)
+                                ,current.MergeApproved__c,'MergeApproved flag set incorrectly');
+        }
+
     }
     
 }
