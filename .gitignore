@@ -36,3 +36,11 @@ Thumbs.db
 ehthumbs.db
 [Dd]esktop.ini
 $RECYCLE.BIN/
+force-app/main/default/layouts/Account-Account Layout.layout-meta.xml
+force-app/main/default/layouts/Contact-Contact Layout.layout-meta.xml
+force-app/main/default/layouts/Contact-Contact Layout.layout-meta.xml
+force-app/main/default/objects/Contact/listViews/All_Contacts.listView-meta.xml
+force-app/main/default/reportTypes/DuplicateProspects.reportType-meta.xml
+force-app/main/default/reports/unfiled$public/New_Duplicate_Prospects_Merge_Preview_4Ag.report-meta.xml
+force-app/main/default/layouts/Contact-Contact Layout.layout-meta.xml
+force-app/main/default/layouts/Contact-Contact Layout.layout-meta.xml

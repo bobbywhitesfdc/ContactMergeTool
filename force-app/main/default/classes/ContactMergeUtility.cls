@@ -60,7 +60,6 @@ public class ContactMergeUtility {
                                     System.debug('match below threshold:' + possibleMatchRecord.getMatchConfidence());
                                 }
                             }
-      
                         } else {
                             System.debug('Skipping wrong matchWith Contact-Type:' + current);
                         }
@@ -69,7 +68,8 @@ public class ContactMergeUtility {
             }
 
             // Put a single best match in the results
-            matchResults.put(currentMaster,(Contact)bestMatch.getRecord());
+            final Contact bestMatchContact = (bestMatch == null) ? null : (Contact) bestMatch.getRecord();
+            matchResults.put(currentMaster,bestMatchContact);
             i++;
         } 
         
