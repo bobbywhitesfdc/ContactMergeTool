@@ -12,9 +12,9 @@ public class ContactMergeBatch_Test {
     private static testmethod void testMatchMode() {
         Test.startTest();
 
-
+        final Integer batchScope = 50; // Limit to 50 records per execution to avoid limits
         Database.executeBatch(new ContactMergeBatch('SELECT Id From Contact Where TDA_Contact_Type__c=\'Prospect\''
-                              ,'Match'));
+                              ,'Match'),batchScope);
 
         Test.stopTest();
 
@@ -55,7 +55,6 @@ public class ContactMergeBatch_Test {
          * When the Merge operation completes, we should no Prospects left needing
          * to be merged 
          **/ 
-
          System.Assert([SELECT Id 
                         From Contact 
                         Where TDA_Contact_Type__c='Prospect'

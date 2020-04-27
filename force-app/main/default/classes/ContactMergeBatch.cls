@@ -1,4 +1,4 @@
-global class ContactMergeBatch implements Database.Batchable<sObject>{
+global class ContactMergeBatch implements Database.Batchable<SObject>, Database.Stateful {
 
     public enum OperationType {  MATCH, MERGEOP }
 
@@ -6,11 +6,14 @@ global class ContactMergeBatch implements Database.Batchable<sObject>{
     private final OperationType op;
     private final String duplicateKind='Prospect';
     private final String matchWithType='Client'; 
-
+    public Integer recordsProcessed {get;private set;}
+    public Integer errorCount {get; private set;}
  
     global ContactMergeBatch(final String q, final String opName){
        this.query=q;
        this.op = opName != null && opName=='Merge' ? OperationType.MERGEOP : OperationType.MATCH;
+       this.recordsProcessed=0;
+       this.errorCount=0;
     }
  
     global Database.QueryLocator start(Database.BatchableContext BC){
@@ -20,18 +23,26 @@ global class ContactMergeBatch implements Database.Batchable<sObject>{
     /**
      * Run the Matching Logic
      **/
-    global void execute(Database.BatchableContext BC, List<SObject> scope){
+    global void execute(Database.BatchableContext BC, List<Contact> scope){
 
-        final ContactMergeUtility util = new ContactMergeUtility((List<Contact>) scope,matchWithType);
+        final ContactMergeUtility util = new ContactMergeUtility(scope,matchWithType);
  
         if (this.op == OperationType.MATCH) {
-            util.saveMatches(util.match());
+            for (Database.saveResult current : util.saveMatches(util.match())) {
+                this.recordsProcessed++;
+                this.errorCount += (current.isSuccess() ? 0 : 1);
+            }
         } else {
             // Merge the duplicates 
-            util.processMerges((List<Contact>)scope,duplicateKind); 
+            for(Database.mergeResult current : util.processMerges((List<Contact>)scope,duplicateKind)) {
+                this.recordsProcessed++;
+                this.errorCount += (current.isSuccess() ? 0 : 1);               
+            } 
         }
     }
  
     global void finish(Database.BatchableContext BC){
+        System.debug('recordsProcessed: ' + this.recordsProcessed);
+        System.debug('errorCount: ' + this.errorCount);
     }
  }
