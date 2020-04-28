@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Minimal Permissions to allow end users to review Prospect Match and Merge results.</description>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contact.MasterContact__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contact.MergeApproved__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Prospect Merge Review</label>
+</PermissionSet>

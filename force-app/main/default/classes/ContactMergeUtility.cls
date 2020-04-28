@@ -39,7 +39,7 @@ public class ContactMergeUtility {
          		System.debug('Duplicate results-Match Results.size:' + dupeResult.getMatchResults().size());     
 
                 for (Datacloud.MatchResult matchResult : dupeResult.getMatchResults()) {
-                    System.debug('Match Rule:' + matchResult.getRule());
+                    System.debug('Match Rule:' + matchResult.getRule() + ' result size:' + matchResult.getSize());
                     for (Datacloud.MatchRecord possibleMatchRecord : matchResult.getMatchRecords()) {
                         final Contact current = enrichedMatches.get(possibleMatchRecord.getRecord().Id);
                         if (current.TDA_Contact_Type__c == this.matchWithType) {
