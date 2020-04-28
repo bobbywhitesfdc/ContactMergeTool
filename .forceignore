@@ -3,8 +3,12 @@
 #
 
 package.xml
-# Exclude profiles from push/pull
+# Exclude these Metadata Types from push/pull
 **/*.profile
+**/*.layout
+**/*.reportType-meta.xml
+**/*.report-meta.xml
+
 
 # LWC configuration files
 **/jsconfig.json
